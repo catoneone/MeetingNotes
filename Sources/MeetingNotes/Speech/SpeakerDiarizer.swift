@@ -190,15 +190,19 @@ final class SpeakerDiarizer {
         // Pack input for real FFT
         windowed.withUnsafeBufferPointer { ptr in
             ptr.baseAddress!.withMemoryRebound(to: DSPComplex.self, capacity: halfN) { complexPtr in
-                var splitComplex = DSPSplitComplex(realp: &realPart, imagp: &imagPart)
-                vDSP_ctoz(complexPtr, 2, &splitComplex, 1, vDSP_Length(halfN))
-                vDSP_fft_zrip(fftSetup, &splitComplex, 1, log2n, FFTDirection(FFT_FORWARD))
-
-                // Compute magnitudes
-                for i in 0..<halfN {
-                    magnitudes[i] = sqrt(realPart[i] * realPart[i] + imagPart[i] * imagPart[i])
+                realPart.withUnsafeMutableBufferPointer { realBuf in
+                    imagPart.withUnsafeMutableBufferPointer { imagBuf in
+                        var splitComplex = DSPSplitComplex(realp: realBuf.baseAddress!, imagp: imagBuf.baseAddress!)
+                        vDSP_ctoz(complexPtr, 2, &splitComplex, 1, vDSP_Length(halfN))
+                        vDSP_fft_zrip(fftSetup, &splitComplex, 1, log2n, FFTDirection(FFT_FORWARD))
+                    }
                 }
             }
+        }
+
+        // Compute magnitudes
+        for i in 0..<halfN {
+            magnitudes[i] = sqrt(realPart[i] * realPart[i] + imagPart[i] * imagPart[i])
         }
 
         // Group into bands (roughly mel-spaced by using exponential spacing)

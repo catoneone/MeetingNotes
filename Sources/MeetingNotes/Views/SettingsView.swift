@@ -147,7 +147,7 @@ struct SettingsView: View {
 
             Image(systemName: "waveform.circle.fill")
                 .font(.system(size: 64))
-                .foregroundStyle(.accentColor)
+                .foregroundStyle(Color.accentColor)
 
             Text("MeetingNotes")
                 .font(.title.bold())

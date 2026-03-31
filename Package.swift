@@ -10,6 +10,7 @@ let package = Package(
         .executableTarget(
             name: "MeetingNotes",
             path: "Sources/MeetingNotes",
+            exclude: ["Info.plist", "MeetingNotes.entitlements"],
             linkerSettings: [
                 .linkedFramework("ScreenCaptureKit"),
                 .linkedFramework("AVFoundation"),
