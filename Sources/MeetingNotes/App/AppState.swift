@@ -25,9 +25,13 @@ final class AppState {
     var autoTranslate: Bool = true
     var autoSuggest: Bool = true
 
+    // MARK: - Speaker Diarization
+    var currentSpeakerLabel: String = "Speaker"
+
     // MARK: - Services
     var audioCaptureManager: AudioCaptureManager?
     var speechRecognizer: SpeechRecognizer?
+    var speakerDiarizer: SpeakerDiarizer?
     var llmService: LLMService?
     var translationService: TranslationService?
     var meetingAIAssistant: MeetingAIAssistant?
@@ -61,6 +65,15 @@ final class AppState {
         speechRecognizer = SpeechRecognizer()
         audioCaptureManager = AudioCaptureManager()
 
+        // Initialize speaker diarizer
+        let diarizer = SpeakerDiarizer()
+        diarizer.onSpeakerChange = { [weak self] speaker in
+            Task { @MainActor in
+                self?.currentSpeakerLabel = speaker.label
+            }
+        }
+        speakerDiarizer = diarizer
+
         // Set up speech recognition callback
         speechRecognizer?.onTranscriptUpdate = { [weak self] text, isFinal, source in
             Task { @MainActor in
@@ -74,6 +87,8 @@ final class AppState {
                 try await audioCaptureManager?.startCapture()
                 audioCaptureManager?.onSystemAudioBuffer = { [weak self] buffer in
                     self?.speechRecognizer?.processAudioBuffer(buffer, source: .system)
+                    // Feed system audio to speaker diarizer
+                    self?.speakerDiarizer?.processBuffer(buffer)
                 }
                 audioCaptureManager?.onMicrophoneBuffer = { [weak self] buffer in
                     self?.speechRecognizer?.processAudioBuffer(buffer, source: .user)
@@ -92,6 +107,7 @@ final class AppState {
 
         audioCaptureManager?.stopCapture()
         speechRecognizer?.stopRecognition()
+        speakerDiarizer?.reset()
 
         currentSession?.endMeeting()
 
@@ -113,7 +129,8 @@ final class AppState {
 
     @MainActor
     private func handleTranscriptUpdate(text: String, isFinal: Bool, source: TranscriptEntry.AudioSource) {
-        currentSession?.updateLastEntry(english: text, isFinal: isFinal, source: source)
+        let label = source == .user ? "Me" : currentSpeakerLabel
+        currentSession?.updateLastEntry(english: text, isFinal: isFinal, source: source, speakerLabel: label)
         currentEnglishText = text
 
         if isFinal && autoTranslate {

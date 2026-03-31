@@ -19,12 +19,13 @@ final class MeetingSession {
         entries.append(entry)
     }
 
-    func updateLastEntry(english: String, isFinal: Bool, source: TranscriptEntry.AudioSource) {
+    func updateLastEntry(english: String, isFinal: Bool, source: TranscriptEntry.AudioSource, speakerLabel: String = "Speaker") {
         if let lastIndex = entries.lastIndex(where: { $0.source == source && !$0.isFinal }) {
             entries[lastIndex].englishText = english
             entries[lastIndex].isFinal = isFinal
+            entries[lastIndex].speakerLabel = speakerLabel
         } else {
-            let entry = TranscriptEntry(englishText: english, isFinal: isFinal, source: source)
+            let entry = TranscriptEntry(englishText: english, isFinal: isFinal, source: source, speakerLabel: speakerLabel)
             entries.append(entry)
         }
     }
@@ -38,7 +39,7 @@ final class MeetingSession {
     var fullTranscript: String {
         entries
             .filter { $0.isFinal }
-            .map { "[\($0.source == .user ? "Me" : "Speaker")]: \($0.englishText)" }
+            .map { "[\($0.speakerLabel)]: \($0.englishText)" }
             .joined(separator: "\n")
     }
 

@@ -139,11 +139,15 @@ struct MeetingSummaryView: View {
             LazyVStack(alignment: .leading, spacing: 8) {
                 ForEach(session.entries) { entry in
                     HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: entry.source == .user ? "person.fill" : "speaker.wave.2.fill")
-                            .foregroundStyle(entry.source == .user ? .green : .secondary)
+                        Image(systemName: entry.source == .user ? "person.fill" : "person.wave.2.fill")
+                            .foregroundStyle(entry.source == .user ? .green : speakerColor(for: entry.speakerLabel))
                             .frame(width: 20)
 
                         VStack(alignment: .leading, spacing: 2) {
+                            Text(entry.speakerLabel)
+                                .font(.caption.bold())
+                                .foregroundStyle(entry.source == .user ? .green : speakerColor(for: entry.speakerLabel))
+
                             Text(entry.englishText)
                                 .textSelection(.enabled)
 
@@ -228,5 +232,17 @@ struct MeetingSummaryView: View {
 
             try? content.write(to: url, atomically: true, encoding: .utf8)
         }
+    }
+
+    // MARK: - Speaker Colors
+
+    private static let speakerColors: [Color] = [.blue, .purple, .orange, .pink, .teal, .indigo, .mint, .brown]
+
+    private func speakerColor(for label: String) -> Color {
+        // Extract speaker number from label like "Speaker 1", "Speaker 2"
+        if let number = label.split(separator: " ").last.flatMap({ Int($0) }) {
+            return Self.speakerColors[(number - 1) % Self.speakerColors.count]
+        }
+        return .secondary
     }
 }

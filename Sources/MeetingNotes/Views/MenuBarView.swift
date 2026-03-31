@@ -137,7 +137,7 @@ struct MenuBarView: View {
                     .font(.caption2)
                     .foregroundStyle(entry.source == .user ? .green : .secondary)
 
-                Text(entry.source == .user ? "Me" : "Speaker")
+                Text(entry.speakerLabel)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
 

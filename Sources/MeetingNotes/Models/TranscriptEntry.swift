@@ -9,6 +9,8 @@ struct TranscriptEntry: Identifiable, Codable {
     var isFinal: Bool
     /// "system" for meeting audio, "user" for microphone
     var source: AudioSource
+    /// Speaker label for diarization (e.g., "Speaker 1", "Speaker 2", or "Me")
+    var speakerLabel: String
 
     enum AudioSource: String, Codable {
         case system
@@ -21,7 +23,8 @@ struct TranscriptEntry: Identifiable, Codable {
         englishText: String,
         chineseText: String? = nil,
         isFinal: Bool = false,
-        source: AudioSource = .system
+        source: AudioSource = .system,
+        speakerLabel: String? = nil
     ) {
         self.id = id
         self.timestamp = timestamp
@@ -29,5 +32,6 @@ struct TranscriptEntry: Identifiable, Codable {
         self.chineseText = chineseText
         self.isFinal = isFinal
         self.source = source
+        self.speakerLabel = speakerLabel ?? (source == .user ? "Me" : "Speaker")
     }
 }
