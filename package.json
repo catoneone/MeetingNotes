@@ -1,0 +1,10 @@
+{
+  "name": "meeting-copilot-mvp",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "setup:mac": "bash ./scripts/bootstrap-mac.sh",
+    "setup:local-stt": "bash ./scripts/setup-local-stt.sh",
+    "start": "node server.js"
+  }
+}

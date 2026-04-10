@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meeting Copilot</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand-block">
+            <p class="eyebrow">Meeting OS</p>
+            <h1>Meeting Copilot</h1>
+          </div>
+          <button id="new-meeting" class="primary-button wide-button">+ 新建</button>
+        </div>
+
+        <section class="sidebar-section">
+          <div class="section-heading">
+            <span>会议</span>
+            <span id="session-count" class="count-pill">0</span>
+          </div>
+          <div id="meeting-list" class="meeting-list"></div>
+        </section>
+
+        <section class="sidebar-section sidebar-status">
+          <div class="section-heading">
+            <span>状态</span>
+          </div>
+          <div class="status-stack">
+            <span id="analysis-pill" class="status-pill">分析后端检查中</span>
+            <span id="transcribe-pill" class="status-pill">转写后端检查中</span>
+            <span id="mic-pill" class="status-pill">麦克风未连接</span>
+            <span id="system-pill" class="status-pill">会议声音未连接</span>
+          </div>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <header class="document-header">
+          <div class="document-heading">
+            <input
+              id="meeting-title"
+              class="meeting-title"
+              type="text"
+              value=""
+              aria-label="Meeting title"
+            />
+            <div class="document-meta">
+              <span id="meeting-status" class="meeting-status">准备开始</span>
+              <span id="meeting-meta" class="meeting-meta">还没有会议内容</span>
+            </div>
+          </div>
+          <div class="document-actions">
+            <button id="start-session" class="primary-button">开始会议</button>
+            <button id="stop-session" class="secondary-button">结束会议</button>
+          </div>
+        </header>
+
+        <p id="workspace-notice" class="workspace-notice"></p>
+
+        <section class="document-surface">
+          <div id="document-scroll" class="document-scroll">
+            <section class="document-block">
+              <div class="block-head">
+                <div>
+                  <h2>原文</h2>
+                </div>
+                <span id="transcript-count" class="muted-meta">0 lines</span>
+              </div>
+              <div id="transcript-document" class="transcript-document"></div>
+            </section>
+
+            <section id="summary-block" class="document-block summary-block">
+              <div class="block-head">
+                <div>
+                  <h2>总结</h2>
+                </div>
+                <div class="summary-actions">
+                  <span id="summary-status" class="muted-meta">结束后自动整理</span>
+                  <button id="refresh-summary" class="text-button" type="button">刷新总结</button>
+                  <button id="copy-note" class="text-button" type="button">复制笔记</button>
+                </div>
+              </div>
+              <div id="summary-container" class="summary-container"></div>
+
+              <div id="note-section" class="note-section" hidden>
+                <label class="note-label" for="meeting-note">笔记</label>
+                <textarea
+                  id="meeting-note"
+                  class="meeting-note"
+                  spellcheck="false"
+                  placeholder="AI 会后笔记会出现在这里，你也可以直接继续修改。"
+                ></textarea>
+              </div>
+            </section>
+          </div>
+
+          <div id="player-dock" class="player-dock">
+            <div class="player-copy">
+              <strong>回听</strong>
+              <p id="player-meta">点一行回听</p>
+            </div>
+            <audio id="line-player" controls preload="metadata"></audio>
+          </div>
+        </section>
+      </main>
+
+      <aside class="copilot-panel">
+        <div class="copilot-top">
+          <div>
+            <h2 id="assistant-title">AI</h2>
+          </div>
+          <span id="assistant-mode" class="assistant-mode">跟听中</span>
+        </div>
+
+        <div id="assistant-blocks" class="assistant-blocks"></div>
+
+        <div class="copilot-actions">
+          <button id="refresh-understanding" class="secondary-button" type="button">
+            理解
+          </button>
+          <button id="suggest-reply" class="secondary-button" type="button">
+            接话
+          </button>
+        </div>
+
+        <section class="copilot-log">
+          <div class="block-head compact">
+            <div>
+              <h3>自动记录</h3>
+            </div>
+          </div>
+          <ul id="auto-log-list" class="auto-log-list"></ul>
+        </section>
+      </aside>
+    </div>
+  </body>
+</html>
